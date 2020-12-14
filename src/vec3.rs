@@ -2,7 +2,7 @@ extern crate approx;
 extern crate nalgebra as na;
 
 use image::{Rgb, Rgba};
-use rand_distr::{Distribution, UnitBall, UnitSphere};
+use rand_distr::{Distribution, UnitBall, UnitDisc, UnitSphere};
 
 // use glam::Vec3;
 use na::Vector3;
@@ -61,4 +61,9 @@ pub fn random_in_unit_hemisphere(normal: Vec3) -> Vec3 {
     } else {
         -in_unit_sphere
     }
+}
+
+pub fn random_in_unit_disc() -> Vec3 {
+    let [x, y] = UnitDisc.sample(&mut rand::thread_rng());
+    Vec3::new(x, y, 0.0)
 }

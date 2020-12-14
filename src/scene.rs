@@ -3,10 +3,8 @@ use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::vec3::*;
 
-use std::sync::Arc;
-
 pub struct Scene {
-    objects: Vec<Arc<dyn Hittable + Send + Sync>>,
+    objects: Vec<Box<dyn Hittable + Send + Sync>>,
     background: (Color, Color),
 }
 
@@ -23,7 +21,7 @@ impl Scene {
     }
 
     pub fn add<T: Hittable + Send + Sync + 'static>(&mut self, object: T) {
-        self.objects.push(Arc::new(object));
+        self.objects.push(Box::new(object));
     }
 }
 
