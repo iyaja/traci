@@ -1,16 +1,22 @@
 use crate::hittable::{HitRecord, Hittable};
+use crate::material::*;
 use crate::ray::Ray;
 use crate::vec3::*;
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone)]
 pub struct Sphere {
     pub center: Vec3,
     pub radius: f32,
+    pub material: Material,
 }
 
 impl Sphere {
-    pub fn new(center: Vec3, radius: f32) -> Sphere {
-        Sphere { center, radius }
+    pub fn new(center: Vec3, radius: f32, material: Material) -> Sphere {
+        Sphere {
+            center,
+            radius,
+            material,
+        }
     }
 }
 
@@ -18,9 +24,9 @@ impl Hittable for Sphere {
     fn hit(&self, r: Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         let oc = r.origin - self.center;
         let a = r.direction.norm_squared();
-        let half_b = oc.dot(&r.direction);
-        let c = oc.dot(&oc) - self.radius.powi(2);
-        let discriminant = half_b.powi(2) - a * c;
+        let b = oc.dot(&r.direction);
+        let c = oc.dot(&oc) - self.radius * self.radius;
+        let discriminant = b * b - a * c;
 
         if discriminant < 0.0 {
             return None;
@@ -28,21 +34,20 @@ impl Hittable for Sphere {
 
         let sqrtd = discriminant.sqrt();
 
-        let mut root = (-half_b - sqrtd) / a;
+        let mut root = (-b - sqrtd) / a;
         if root < t_min || t_max < root {
-            return None;
-        }
-
-        root = (-half_b + sqrtd) / a;
-        if root < t_min || t_max < root {
-            return None;
+            root = (-b + sqrtd) / a;
+            if root < t_min || t_max < root {
+                return None;
+            }
         }
 
         let p = r.at(root);
         let rec = HitRecord {
             t: root,
             point: p,
-            normal: p - self.center / self.radius,
+            normal: (p - self.center) / self.radius,
+            material: self.material,
         };
 
         Some(rec)

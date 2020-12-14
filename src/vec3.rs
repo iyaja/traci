@@ -2,7 +2,7 @@ extern crate approx;
 extern crate nalgebra as na;
 
 use image::{Rgb, Rgba};
-use rand_distr::{Distribution, UnitBall};
+use rand_distr::{Distribution, UnitBall, UnitSphere};
 
 // use glam::Vec3;
 use na::Vector3;
@@ -46,4 +46,19 @@ impl PointVec for Vec3 {}
 pub fn random_in_unit_sphere() -> Vec3 {
     let [x, y, z] = UnitBall.sample(&mut rand::thread_rng());
     Vec3::new(x, y, z)
+}
+
+pub fn random_on_unit_sphere() -> Vec3 {
+    let [x, y, z] = UnitSphere.sample(&mut rand::thread_rng());
+    Vec3::new(x, y, z)
+}
+
+pub fn random_in_unit_hemisphere(normal: Vec3) -> Vec3 {
+    let [x, y, z] = UnitSphere.sample(&mut rand::thread_rng());
+    let in_unit_sphere = Vec3::new(x, y, z);
+    if in_unit_sphere.dot(&normal) > 0.0 {
+        in_unit_sphere
+    } else {
+        -in_unit_sphere
+    }
 }

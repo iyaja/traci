@@ -29,13 +29,20 @@ impl Scene {
 
 impl Hittable for Scene {
     fn hit(&self, r: Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
+        let mut closest = t_max;
+        let mut closest_hit = None;
         for object in &self.objects {
             let hit = object.hit(r, t_min, t_max);
             match hit {
-                Some(rec) => return Some(rec),
+                Some(rec) => {
+                    if rec.t < closest {
+                        closest = rec.t;
+                        closest_hit = hit;
+                    }
+                }
                 None => continue,
             }
         }
-        None
+        closest_hit
     }
 }
