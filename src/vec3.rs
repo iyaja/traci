@@ -67,3 +67,14 @@ pub fn random_in_unit_disc() -> Vec3 {
     let [x, y] = UnitDisc.sample(&mut rand::thread_rng());
     Vec3::new(x, y, 0.0)
 }
+
+pub fn refract(direction: Vec3, surface_normal: Vec3, etai_over_etat: f32) -> Vec3 {
+    let cos_theta = (-direction).dot(&surface_normal);
+    let r_out_perp = etai_over_etat * (direction + cos_theta * surface_normal);
+    let r_out_parallel = -(1.0 - r_out_perp.norm_squared()).abs().sqrt() * surface_normal;
+    r_out_perp + r_out_parallel
+}
+
+pub fn reflect(direction: Vec3, surface_normal: Vec3) -> Vec3 {
+    direction - 2.0 * direction.dot(&surface_normal) * surface_normal
+}

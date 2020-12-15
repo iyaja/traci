@@ -26,20 +26,26 @@ impl Ray {
     }
 
     pub fn refract(&self, hit: HitRecord, refraction_index: f32) -> Ray {
-        let unit_direction = self.direction.normalize();
-        let refraction_ratio = if unit_direction.dot(&hit.normal) > 0.0 {
-            1.0 / refraction_index
-        } else {
+        let refraction_ratio = if self.direction.dot(&hit.normal) > 0.0 {
             refraction_index
+        } else {
+            1.0 / refraction_index
         };
 
-        let cos_theta = (-unit_direction).dot(&hit.normal);
-        let sin_theta = (1.0 - cos_theta.powi(2)).sqrt();
+        let unit_direction = self.direction.normalize();
+
+        let cos_theta = if -unit_direction.dot(&hit.normal) < 1.0 {
+            -unit_direction.dot(&hit.normal)
+        } else {
+            1.0
+        };
+        let sin_theta = (1.0 - cos_theta * cos_theta).sqrt();
 
         let random_range = Uniform::new(0.0, 1.0);
         let random_float = random_range.sample(&mut rand::thread_rng());
+
         if refraction_ratio * sin_theta > 1.0
-            || self.reflactance(cos_theta, refraction_index) > random_float
+        // || self.reflactance(cos_theta, refraction_index) > random_float
         {
             return self.reflect(hit);
         }
