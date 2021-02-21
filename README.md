@@ -2,6 +2,18 @@
 
 ![A Sample Rendered Image](images/final.png)
 
+## Features
+
+[x] Commented code
+[x] Ray-Plane Intersection
+[x] Ray-Sphere Intersection
+[x] Ray-Triangle Intersection
+[x] Movable Camera
+[ ] Orthographic and Perspective Projection
+[ ] Multi-Jittered Sampling
+[x] Simple Diffuse Shading
+[x] Hard Shadows
+
 ## Build from Source
 
 Traci is written in Rust. To compile to an executable, you first need a working installation of the Rust and Cargo. PLease visit [the official Rust website]() for instructions.
