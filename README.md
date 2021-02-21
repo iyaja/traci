@@ -9,7 +9,7 @@
 [x] Ray-Sphere Intersection
 [x] Ray-Triangle Intersection
 [x] Movable Camera
-[ ] Orthographic and Perspective Projection
+[x] Orthographic and Perspective Projection
 [ ] Multi-Jittered Sampling
 [x] Simple Diffuse Shading
 [x] Hard Shadows

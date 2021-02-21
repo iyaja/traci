@@ -127,8 +127,8 @@ impl OrthographicCamera {
         let offset = self.u * rd.x + self.v * rd.y;
 
         Ray {
-            origin: self.lower_left_corner + s * self.horizontal + t * self.vertical,
-            direction: self.horizontal.cross(&self.vertical),
+            origin: (s - 0.5) * self.horizontal + (t - 0.5) * self.vertical,
+            direction: -self.horizontal.cross(&self.vertical).normalize(),
         }
     }
 }
