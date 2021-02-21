@@ -12,7 +12,7 @@ mod scene;
 mod sphere;
 mod vec3;
 
-use camera::Camera;
+use camera::{Camera, PerspectiveCamera, OrthographicCamera};
 use hittable::{HitRecord, Hittable};
 use material::{Material, Scatter};
 use ray::Ray;
@@ -64,7 +64,7 @@ fn main() {
     let aperture = 0.1;
 
     // Setup main objects used for rendering
-    let mut cam = Camera::new(
+    let mut cam = OrthographicCamera::new(
         lookfrom,
         lookat,
         vup,
@@ -78,50 +78,50 @@ fn main() {
 
     // Scene parameters
     let num_spheres = 30;
-    // let radius_min = 0.0;
-    // let radius_max = 0.0;
-    // let x_min = 0.0;
-    // let x_max = 0.0;
-    // let y_min = 0.0;
-    // let y_max = 0.0;
+    let radius_min = 0.0;
+    let radius_max = 0.0;
+    let x_min = 0.0;
+    let x_max = 0.0;
+    let y_min = 0.0;
+    let y_max = 0.0;
 
-    let world = random_scene(num_spheres);
+    // let world = random_scene(num_spheres);
 
-    // let material_ground = Material::Lambertian {
-    //     albedo: Color::new(0.8, 0.8, 0.0),
-    // };
-    // let material_center = Material::Lambertian {
-    //     albedo: Color::new(0.0, 0.8, 0.8),
-    // };
-    // let material_left = Material::Metal {
-    //     albedo: Color::new(0.8, 0.0, 0.8),
-    //     fuzz: 1.0,
-    // };
-    // let material_right = Material::Dielectric {
-    //     albedo: Color::new(1.0, 1.0, 1.0),
-    //     refraction_index: 0.4,
-    // };
+    let material_ground = Material::Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.0),
+    };
+    let material_center = Material::Lambertian {
+        albedo: Color::new(0.0, 0.8, 0.8),
+    };
+    let material_left = Material::Metal {
+        albedo: Color::new(0.8, 0.0, 0.8),
+        fuzz: 1.0,
+    };
+    let material_right = Material::Dielectric {
+        albedo: Color::new(1.0, 1.0, 1.0),
+        refraction_index: 0.4,
+    };
 
-    // world.add(Sphere::new(
-    //     Point3::new(0.0, -100.5, -1.0),
-    //     100.0,
-    //     material_ground,
-    // ));
-    // world.add(Sphere::new(
-    //     Point3::new(0.0, 0.0, -1.0),
-    //     0.5,
-    //     material_center,
-    // ));
-    // world.add(Sphere::new(
-    //     Point3::new(-1.0, 0.0, -1.0),
-    //     0.5,
-    //     material_left,
-    // ));
-    // world.add(Sphere::new(
-    //     Point3::new(1.0, 0.0, -1.0),
-    //     0.5,
-    //     material_right,
-    // ));
+    world.add(Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0,
+        material_ground,
+    ));
+    world.add(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        material_center,
+    ));
+    world.add(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        material_left,
+    ));
+    world.add(Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        material_right,
+    ));
 
     let pb = ProgressBar::new(image_height as u64 * image_width as u64);
     pb.set_style(
