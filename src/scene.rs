@@ -1,9 +1,11 @@
 use crate::hittable::{HitRecord, Hittable};
+use crate::light::{Light, PointLight};
 use crate::ray::Ray;
 use crate::sphere::Sphere;
 use crate::vec3::*;
 
 pub struct Scene {
+    pub lights: Vec<PointLight>,
     objects: Vec<Box<dyn Hittable + Send + Sync>>,
     background: (Color, Color),
 }
@@ -11,6 +13,7 @@ pub struct Scene {
 impl Scene {
     pub fn new() -> Scene {
         Scene {
+            lights: Vec::new(),
             objects: Vec::new(),
             background: (Color::new(1.0, 1.0, 1.0), Color::new(0.5, 0.7, 1.0)),
         }
@@ -22,6 +25,10 @@ impl Scene {
 
     pub fn add<T: Hittable + Send + Sync + 'static>(&mut self, object: T) {
         self.objects.push(Box::new(object));
+    }
+
+    pub fn add_light(&mut self, light: PointLight) {
+        self.lights.push(light);
     }
 }
 

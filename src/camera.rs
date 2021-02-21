@@ -128,7 +128,7 @@ impl OrthographicCamera {
 
         Ray {
             origin: self.lower_left_corner + s * self.horizontal + t * self.vertical,
-            direction: Vec3::new(0.0, 0.0, -1.0),
+            direction: self.horizontal.cross(&self.vertical),
         }
     }
 }

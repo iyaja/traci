@@ -6,20 +6,24 @@ extern crate nalgebra as na;
 
 mod camera;
 mod hittable;
+mod light;
 mod material;
 mod plane;
 mod ray;
 mod scene;
 mod sphere;
+mod triangle;
 mod vec3;
 
 use camera::{Camera, OrthographicCamera, PerspectiveCamera};
 use hittable::{HitRecord, Hittable};
+use light::{Light, PointLight};
 use material::{Material, Scatter};
 use plane::Plane;
 use ray::Ray;
 use scene::Scene;
 use sphere::Sphere;
+use triangle::Triangle;
 use vec3::*;
 
 use image::{GenericImage, GenericImageView, ImageBuffer, Rgb, RgbImage, Rgba, RgbaImage};
@@ -47,26 +51,75 @@ fn ray_color(ray: Ray, world: &Scene, depth: i32) -> Color {
     }
 }
 
+fn ray_color_phong(ray: Ray, world: &Scene, depth: i32) -> Color {
+    let hit = world.hit(ray, 0.001, std::f32::MAX);
+
+    match hit {
+        Some(rec) => {
+            let scatter = rec.material.scatter(ray, rec);
+            let ambient = scatter.attenuation;
+            let mut specular = Color::new(0.0, 0.0, 0.0);
+            let mut diffuse = Color::new(0.0, 0.0, 0.0);
+
+            let ambient_coeff: f32 = 0.3;
+            let mut diffuse_coeff: f32 = 0.7;
+            let mut specular_coeff: f32 = 0.6;
+
+            for light in &world.lights {
+                let light_vector = (rec.point - light.position).normalize();
+
+                diffuse += rec.normal.dot(&light_vector).max(0.0)
+                    * scatter.attenuation.component_mul(&light.color);
+                let reflected = 2.0 * (light_vector.dot(&rec.normal)) * rec.normal - light_vector;
+                specular += ray
+                    .direction
+                    .dot(&reflected.normalize())
+                    .max(0.0)
+                    .min(1.0)
+                    .powi(40)
+                    * scatter.attenuation.component_mul(&light.color);
+            }
+
+            for light in &world.lights {
+                let shadow_ray = Ray::new(rec.point, rec.point - light.position);
+                let shadow_hit = world.hit(shadow_ray, 0.001, std::f32::MAX);
+                if let Some(_) = shadow_hit {
+                    diffuse_coeff = 0.0;
+                    specular_coeff = 0.0;
+                }
+            }
+            // println!("{}", specular);
+            return ambient_coeff * ambient + diffuse_coeff * diffuse;
+        }
+        None => {
+            let unit_direction = ray.direction.normalize();
+            let t = 0.5 * (unit_direction.y + 1.0);
+            return ((1.0 - t) * Color::new(1.0, 1.0, 1.0)) + (t * Color::new(0.5, 0.7, 1.0));
+            // return Color::new(0.0, 0.0, 0.0);
+        }
+    }
+}
+
 fn main() {
     // TODO: convert to clap args
 
     //  Image parameters
     const aspect_ratio: f32 = 16.0 / 9.0;
-    const image_width: u32 = 500;
+    const image_width: u32 = 200;
     const image_height: u32 = (image_width as f32 / aspect_ratio) as u32;
     const samples_per_pixel: i32 = 100;
-    const max_depth: i32 = 100;
+    const max_depth: i32 = 50;
 
     // Camera parameters
-    let lookfrom = Point3::new(13.0, 2.0, 3.0);
-    let lookat = Point3::new(0.0, 0.0, 0.0);
+    let lookfrom = Point3::new(0.0, 0.0, 0.0);
+    let lookat = Point3::new(0.0, 0.0, -1.0);
     let vup = Point3::new(0.0, 1.0, 0.0);
     let vfov = 27.5;
     let focal_length = 10.0;
     let aperture = 0.1;
 
     // Setup main objects used for rendering
-    let mut cam = OrthographicCamera::new(
+    let cam = PerspectiveCamera::new(
         lookfrom,
         lookat,
         vup,
@@ -89,45 +142,46 @@ fn main() {
 
     // let world = random_scene(num_spheres);
 
-    let material_ground = Material::Lambertian {
-        albedo: Color::new(0.8, 0.8, 0.0),
-    };
-    let material_center = Material::Lambertian {
-        albedo: Color::new(0.0, 0.8, 0.8),
-    };
-    let material_left = Material::Metal {
-        albedo: Color::new(0.8, 0.0, 0.8),
-        fuzz: 1.0,
-    };
-    let material_right = Material::Dielectric {
-        albedo: Color::new(1.0, 1.0, 1.0),
-        refraction_index: 0.4,
-    };
+    world.add(Triangle::new(
+        Point3::new(-1.0, 1.0, -10.0),
+        Point3::new(1.0, 1.0, -9.0),
+        Point3::new(1.0, -2.0, -10.0),
+        Material::Metal {
+            albedo: Color::new(1.0, 0.0, 0.0),
+            fuzz: 1.0,
+        },
+    ));
+
+    world.add(Plane::new(
+        Point3::new(0.0, -1.0, 0.0),
+        Vec3::new(0.0, 1.0, 0.1),
+        Material::Metal {
+            albedo: Color::new(1.0, 1.0, 0.0),
+            fuzz: 1.0,
+        },
+    ));
 
     world.add(Sphere::new(
-        Point3::new(0.0, -100.5, -1.0),
-        100.0,
-        material_ground,
+        Point3::new(0.0, 0.5, -8.0),
+        1.0,
+        Material::Metal {
+            albedo: Color::new(1.0, 0.0, 1.0),
+            fuzz: 1.0,
+        },
     ));
+
     world.add(Sphere::new(
-        Point3::new(0.0, 0.0, -1.0),
-        0.5,
-        material_center,
+        Point3::new(0.8, 0.7, -7.0),
+        0.4,
+        Material::Metal {
+            albedo: Color::new(0.2, 0.2, 1.0),
+            fuzz: 1.0,
+        },
     ));
-    world.add(Plane::new(
-        Point3::new(0.0, 0.0, -1.0),
-        Vec3::new(0.0, 1.0, -1.0),
-        material_center,
-    ));
-    world.add(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        material_left,
-    ));
-    world.add(Sphere::new(
-        Point3::new(1.0, 0.0, -1.0),
-        0.5,
-        material_right,
+
+    world.add_light(PointLight::new(
+        Point3::new(-10.0, -10.0, -10.0),
+        Color::new(1.0, 1.3, 1.0),
     ));
 
     let pb = ProgressBar::new(image_height as u64 * image_width as u64);
@@ -146,7 +200,7 @@ fn main() {
                 let u = (x as f32 + rng.gen::<f32>()) / (image_width as f32 - 1.0);
                 let v = (y as f32 + rng.gen::<f32>()) / (image_height as f32 - 1.0);
                 let r = cam.get_ray(u, v);
-                ray_color(r, &world, max_depth)
+                ray_color_phong(r, &world, max_depth)
             })
             .sum();
 
@@ -218,6 +272,59 @@ fn random_scene(num_spheres: u32) -> Scene {
             }
         }
     }
+
+    world
+}
+
+fn test_scene() -> Scene {
+    let mut world: Scene = Scene::new();
+
+    let material_ground = Material::Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.0),
+    };
+    let material_center = Material::Lambertian {
+        albedo: Color::new(0.0, 0.8, 0.8),
+    };
+    let material_left = Material::Metal {
+        albedo: Color::new(0.8, 0.0, 0.8),
+        fuzz: 1.0,
+    };
+    let material_right = Material::Dielectric {
+        albedo: Color::new(1.0, 1.0, 1.0),
+        refraction_index: 0.4,
+    };
+
+    world.add(Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0,
+        material_ground,
+    ));
+    world.add(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        material_center,
+    ));
+    // world.add(Plane::new(
+    //     Point3::new(0.0, 0.0, -1.0),
+    //     Vec3::new(0.0, 1.0, -1.0),
+    //     material_center,
+    // ));
+    world.add(Triangle::new(
+        Point3::new(0.0, 0.0, -1.0),
+        Point3::new(1.0, 0.0, -1.0),
+        Point3::new(0.0, -1.0, -1.0),
+        material_left,
+    ));
+    world.add(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        material_left,
+    ));
+    world.add(Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        material_right,
+    ));
 
     world
 }
