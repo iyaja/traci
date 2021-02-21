@@ -7,14 +7,16 @@ extern crate nalgebra as na;
 mod camera;
 mod hittable;
 mod material;
+mod plane;
 mod ray;
 mod scene;
 mod sphere;
 mod vec3;
 
-use camera::{Camera, PerspectiveCamera, OrthographicCamera};
+use camera::{Camera, OrthographicCamera, PerspectiveCamera};
 use hittable::{HitRecord, Hittable};
 use material::{Material, Scatter};
+use plane::Plane;
 use ray::Ray;
 use scene::Scene;
 use sphere::Sphere;
@@ -50,9 +52,9 @@ fn main() {
 
     //  Image parameters
     const aspect_ratio: f32 = 16.0 / 9.0;
-    const image_width: u32 = 1920;
+    const image_width: u32 = 500;
     const image_height: u32 = (image_width as f32 / aspect_ratio) as u32;
-    const samples_per_pixel: i32 = 1000;
+    const samples_per_pixel: i32 = 100;
     const max_depth: i32 = 100;
 
     // Camera parameters
@@ -77,13 +79,13 @@ fn main() {
     let mut world: Scene = Scene::new();
 
     // Scene parameters
-    let num_spheres = 30;
-    let radius_min = 0.0;
-    let radius_max = 0.0;
-    let x_min = 0.0;
-    let x_max = 0.0;
-    let y_min = 0.0;
-    let y_max = 0.0;
+    // let num_spheres = 30;
+    // let radius_min = 0.0;
+    // let radius_max = 0.0;
+    // let x_min = 0.0;
+    // let x_max = 0.0;
+    // let y_min = 0.0;
+    // let y_max = 0.0;
 
     // let world = random_scene(num_spheres);
 
@@ -110,6 +112,11 @@ fn main() {
     world.add(Sphere::new(
         Point3::new(0.0, 0.0, -1.0),
         0.5,
+        material_center,
+    ));
+    world.add(Plane::new(
+        Point3::new(0.0, 0.0, -1.0),
+        Vec3::new(0.0, 1.0, -1.0),
         material_center,
     ));
     world.add(Sphere::new(
