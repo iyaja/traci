@@ -1,3 +1,11 @@
+#![allow(
+    dead_code,
+    unused_imports,
+    unused_assignments,
+    unused_variables,
+    non_upper_case_globals
+)]
+
 #[macro_use]
 extern crate approx;
 extern crate glam;
@@ -119,7 +127,7 @@ fn main() {
     let aperture = 0.1;
 
     // Setup main objects used for rendering
-    let cam = OrthographicCamera::new(
+    let cam = PerspectiveCamera::new(
         lookfrom,
         lookat,
         vup,
@@ -143,9 +151,9 @@ fn main() {
     // let world = random_scene(num_spheres);
 
     world.add(Triangle::new(
-        Point3::new(-1.0, 1.0, -10.0),
-        Point3::new(1.0, 1.0, -9.0),
-        Point3::new(1.0, -2.0, -10.0),
+        Point3::new(4.0, -1.0, -8.0),
+        Point3::new(1.0, 1.5, -9.0),
+        Point3::new(2.0, 0.0, -10.0),
         Material::Metal {
             albedo: Color::new(1.0, 0.0, 0.0),
             fuzz: 1.0,
@@ -171,7 +179,7 @@ fn main() {
     ));
 
     world.add(Sphere::new(
-        Point3::new(0.0, 0.0, -7.0),
+        Point3::new(0.8, 0.7, -7.0),
         0.4,
         Material::Metal {
             albedo: Color::new(0.2, 0.2, 1.0),
