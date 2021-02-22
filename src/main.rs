@@ -113,14 +113,17 @@ fn main() {
 
     //  Image parameters
     const aspect_ratio: f32 = 16.0 / 9.0;
-    const image_width: u32 = 200;
+    const image_width: u32 = 1080;
     const image_height: u32 = (image_width as f32 / aspect_ratio) as u32;
-    const samples_per_pixel: i32 = 100;
-    const max_depth: i32 = 50;
+    const samples_per_pixel: i32 = 500;
+    const max_depth: i32 = 100;
 
     // Camera parameters
     let lookfrom = Point3::new(0.0, 0.0, 0.0);
     let lookat = Point3::new(0.0, 0.0, -1.0);
+    // Alternate viewpoint
+    // let lookfrom = Point3::new(5.5, 0.5, -1.0);
+    // let lookat = Point3::new(0.0, 0.0, -8.0);
     let vup = Point3::new(0.0, 1.0, 0.0);
     let vfov = 27.5;
     let focal_length = 10.0;
@@ -217,7 +220,7 @@ fn main() {
     }
 
     image::imageops::flip_vertical_in_place(&mut img);
-    img.save("images/test.png").unwrap();
+    img.save("images/out.png").unwrap();
 }
 
 fn random_scene(num_spheres: u32) -> Scene {
