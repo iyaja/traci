@@ -1,3 +1,5 @@
+use crate::hittable::aabb::AABB;
+use crate::hittable::bvh::BoundingBox;
 use crate::hittable::{HitRecord, Hittable};
 use crate::material::*;
 use crate::ray::Ray;
@@ -41,5 +43,15 @@ impl Hittable for Plane {
         };
 
         Some(rec)
+    }
+
+    fn bounding_box(&self, t0: f32, t1: f32) -> Option<AABB> {
+        None
+    }
+}
+
+impl BoundingBox for Plane {
+    fn bounding_box(&self, t0: f32, t1: f32) -> Option<AABB> {
+        None
     }
 }

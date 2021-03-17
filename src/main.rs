@@ -16,22 +16,19 @@ mod camera;
 mod hittable;
 mod light;
 mod material;
-mod plane;
 mod ray;
 mod scene;
-mod sphere;
-mod triangle;
 mod vec3;
 
 use camera::{Camera, OrthographicCamera, PerspectiveCamera};
 use hittable::{HitRecord, Hittable};
 use light::{Light, PointLight};
 use material::{Material, Scatter};
-use plane::Plane;
+use hittable::plane::Plane;
 use ray::Ray;
 use scene::Scene;
-use sphere::Sphere;
-use triangle::Triangle;
+use hittable::sphere::Sphere;
+use hittable::triangle::Triangle;
 use vec3::*;
 
 use image::{GenericImage, GenericImageView, ImageBuffer, Rgb, RgbImage, Rgba, RgbaImage};

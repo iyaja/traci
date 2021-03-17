@@ -1,7 +1,8 @@
-use crate::hittable::{HitRecord, Hittable};
+use crate::hittable::bvh::BoundingBox;
+use crate::hittable::sphere::Sphere;
+use crate::hittable::{aabb::AABB, HitRecord, Hittable};
 use crate::light::{Light, PointLight};
 use crate::ray::Ray;
-use crate::sphere::Sphere;
 use crate::vec3::*;
 
 pub struct Scene {
@@ -49,5 +50,24 @@ impl Hittable for Scene {
             }
         }
         closest_hit
+    }
+
+    fn bounding_box(&self, t0: f32, t1: f32) -> Option<AABB> {
+        if self.objects.is_empty() {
+            return None;
+        }
+
+        let mut output_box: AABB = self.objects[0].bounding_box(t0, t1)?;
+
+        let first_box = true;
+        for object in &self.objects {
+            match object.bounding_box(t0, t1) {
+                Some(aabb) => {
+                    output_box = aabb.surrounding_box(output_box);
+                }
+                None => return None,
+            }
+        }
+        Some(output_box)
     }
 }
