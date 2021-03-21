@@ -56,17 +56,8 @@ impl Hittable for Sphere {
 
     fn bounding_box(&self, t0: f32, t1: f32) -> Option<AABB> {
         Some(AABB {
-            min: self.center - self.radius * Vec3::new(1.0, 1.0, 1.0),
-            max: self.center + self.radius * Vec3::new(1.0, 1.0, 1.0),
-        })
-    }
-}
-
-impl BoundingBox for Sphere {
-    fn bounding_box(&self, t0: f32, t1: f32) -> Option<AABB> {
-        Some(AABB {
-            min: self.center - self.radius * Vec3::new(1.0, 1.0, 1.0),
-            max: self.center + self.radius * Vec3::new(1.0, 1.0, 1.0),
+            min: self.center - (self.radius * Vec3::new(1.0, 1.0, 1.0)),
+            max: self.center + (self.radius * Vec3::new(1.0, 1.0, 1.0)),
         })
     }
 }

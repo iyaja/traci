@@ -1,10 +1,12 @@
 use crate::hittable::bvh::BoundingBox;
 use crate::hittable::sphere::Sphere;
-use crate::hittable::{aabb::AABB, HitRecord, Hittable};
+use crate::hittable::{aabb::AABB, bvh::BVH, HitRecord, Hittable};
 use crate::light::{Light, PointLight};
 use crate::ray::Ray;
+
 use crate::vec3::*;
 
+#[derive(Clone)]
 pub struct Scene {
     pub lights: Vec<PointLight>,
     objects: Vec<Box<dyn Hittable + Send + Sync>>,
@@ -16,6 +18,7 @@ impl Scene {
         Scene {
             lights: Vec::new(),
             objects: Vec::new(),
+            bvh: None,
             background: (Color::new(1.0, 1.0, 1.0), Color::new(0.5, 0.7, 1.0)),
         }
     }
@@ -31,12 +34,30 @@ impl Scene {
     pub fn add_light(&mut self, light: PointLight) {
         self.lights.push(light);
     }
+
+    pub fn accelerate(&mut self, t0: f32, t1: f32) {
+        let mut nodes: Vec<Box<dyn Hittable + Send + Sync>> = Vec::new();
+        let mut extra: Vec<Box<dyn Hittable + Send + Sync>> = Vec::new();
+        for prim in self.objects.clone() {
+            match prim.bounding_box(0.0, std::f32::MAX) {
+                Some(_) => nodes.push(prim),
+                None => extra.push(prim),
+            }
+        }
+        println!("Found {} non-boundable objects", extra.len());
+        println!("Adding {} hittables to BVH", nodes.len());
+        let bvh = BVH::new(nodes, t0, t1);
+        self.objects = Vec::new();
+        self.objects.push(Box::new(bvh));
+        self.objects.append(&mut extra);
+    }
 }
 
 impl Hittable for Scene {
     fn hit(&self, r: Ray, t_min: f32, t_max: f32) -> Option<HitRecord> {
         let mut closest = t_max;
         let mut closest_hit = None;
+
         for object in &self.objects {
             let hit = object.hit(r, t_min, t_max);
             match hit {
@@ -63,7 +84,7 @@ impl Hittable for Scene {
         for object in &self.objects {
             match object.bounding_box(t0, t1) {
                 Some(aabb) => {
-                    output_box = aabb.surrounding_box(output_box);
+                    output_box = AABB::surrounding_box(aabb, output_box);
                 }
                 None => return None,
             }

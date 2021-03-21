@@ -21,14 +21,14 @@ mod scene;
 mod vec3;
 
 use camera::{Camera, OrthographicCamera, PerspectiveCamera};
-use hittable::{HitRecord, Hittable};
-use light::{Light, PointLight};
-use material::{Material, Scatter};
 use hittable::plane::Plane;
-use ray::Ray;
-use scene::Scene;
 use hittable::sphere::Sphere;
 use hittable::triangle::Triangle;
+use hittable::{bvh::BVH, HitRecord, Hittable};
+use light::{Light, PointLight};
+use material::{Material, Scatter};
+use ray::Ray;
+use scene::Scene;
 use vec3::*;
 
 use image::{GenericImage, GenericImageView, ImageBuffer, Rgb, RgbImage, Rgba, RgbaImage};
@@ -110,9 +110,9 @@ fn main() {
 
     //  Image parameters
     const aspect_ratio: f32 = 16.0 / 9.0;
-    const image_width: u32 = 1080;
+    const image_width: u32 = 500;
     const image_height: u32 = (image_width as f32 / aspect_ratio) as u32;
-    const samples_per_pixel: i32 = 500;
+    const samples_per_pixel: i32 = 200;
     const max_depth: i32 = 100;
 
     // Camera parameters
@@ -150,42 +150,13 @@ fn main() {
 
     // let world = random_scene(num_spheres);
 
-    world.add(Triangle::new(
-        Point3::new(4.0, -1.0, -8.0),
-        Point3::new(1.0, 1.5, -9.0),
-        Point3::new(2.0, 0.0, -10.0),
-        Material::Metal {
-            albedo: Color::new(1.0, 0.0, 0.0),
-            fuzz: 1.0,
-        },
-    ));
+    for nx in -5..5 {
+        for ny in -5..5 {
+            world.add(random_sphere(nx as f32 / 3.0, ny as f32 / 3.0, -10.0))
+        }
+    }
 
-    world.add(Plane::new(
-        Point3::new(0.0, -1.0, 0.0),
-        Vec3::new(0.0, 1.0, 0.1),
-        Material::Metal {
-            albedo: Color::new(1.0, 1.0, 0.0),
-            fuzz: 1.0,
-        },
-    ));
-
-    world.add(Sphere::new(
-        Point3::new(0.0, 0.0, -8.0),
-        1.0,
-        Material::Metal {
-            albedo: Color::new(1.0, 0.0, 1.0),
-            fuzz: 1.0,
-        },
-    ));
-
-    world.add(Sphere::new(
-        Point3::new(0.8, 0.7, -7.0),
-        0.4,
-        Material::Metal {
-            albedo: Color::new(0.2, 0.2, 1.0),
-            fuzz: 1.0,
-        },
-    ));
+    world.accelerate(std::f32::MIN, std::f32::MAX);
 
     world.add_light(PointLight::new(
         Point3::new(-10.0, -10.0, -10.0),
@@ -220,119 +191,46 @@ fn main() {
     img.save("images/out.png").unwrap();
 }
 
-fn random_scene(num_spheres: u32) -> Scene {
-    let mut world = Scene::new();
-
-    let ground_material = Material::Lambertian {
-        albedo: Color::new(0.5, 0.5, 0.5),
-    };
-    world.add(Sphere::new(
-        Point3::new(0.0, -1000.0, 0.0),
-        1000.0,
-        ground_material,
-    ));
-
+fn random_sphere(x: f32, y: f32, z: f32) -> Sphere {
     let mut rng = rand::thread_rng();
+    let random_float = Uniform::new_inclusive(0.0, 1.0);
+    let random_radius = Uniform::new_inclusive(0.1, 0.2).sample(&mut rng);
+    // let random_x = Uniform::new_inclusive(11.0, 13.0).sample(&mut rng);
+    // let random_z = Uniform::new_inclusive(-5.0, 5.0).sample(&mut rng);
+    let random_albedo_r = Uniform::new_inclusive(0.0, 1.0).sample(&mut rng);
+    let random_albedo_g = Uniform::new_inclusive(0.0, 1.0).sample(&mut rng);
+    let random_albedo_b = Uniform::new_inclusive(0.0, 1.0).sample(&mut rng);
+    let random_albedo = Color::new(random_albedo_r, random_albedo_g, random_albedo_b);
+    let random_refractive_index = Uniform::new_inclusive(-1.5, 1.5).sample(&mut rng);
 
-    let sphere_range = (num_spheres as f32).sqrt() as i32;
+    let mat_picker = Uniform::new(0, 4).sample(&mut rng);
 
-    for a in -sphere_range..sphere_range {
-        for b in -sphere_range..sphere_range {
-            let random_float = Uniform::new_inclusive(0.0, 1.0);
-            let random_radius = Uniform::new_inclusive(0.1, 0.4).sample(&mut rng);
-            let random_x = Uniform::new_inclusive(11.0, 13.0).sample(&mut rng);
-            let random_z = Uniform::new_inclusive(-5.0, 5.0).sample(&mut rng);
-            let random_albedo_r = Uniform::new_inclusive(0.0, 1.0).sample(&mut rng);
-            let random_albedo_g = Uniform::new_inclusive(0.0, 1.0).sample(&mut rng);
-            let random_albedo_b = Uniform::new_inclusive(0.0, 1.0).sample(&mut rng);
-            let random_albedo = Color::new(random_albedo_r, random_albedo_g, random_albedo_b);
-            let random_refractive_index = Uniform::new_inclusive(-1.5, 1.5).sample(&mut rng);
+    // let center = Point3::new(
+    //     a as f32 + 0.9 * random_float.sample(&mut rng),
+    //     random_radius,
+    //     b as f32 + 0.9 * random_float.sample(&mut rng),
+    // );
 
-            let mat_picker = Uniform::new(0, 4).sample(&mut rng);
+    let center = Point3::new(x, y, z);
 
-            let center = Point3::new(
-                a as f32 + 0.9 * random_float.sample(&mut rng),
-                random_radius,
-                b as f32 + 0.9 * random_float.sample(&mut rng),
-            );
-
-            if (center - Point3::new(4.0, 0.2, 0.0)).norm() > 0.9 {
-                let sphere_material = match mat_picker {
-                    0 => {
-                        let albedo = random_albedo;
-                        Material::Lambertian { albedo }
-                    }
-                    1 => {
-                        let albedo = random_albedo;
-                        let fuzz = Uniform::new(0.0, 0.5).sample(&mut rand::thread_rng());
-                        Material::Metal { albedo, fuzz }
-                    }
-                    2 => Material::Dielectric {
-                        albedo: Color::new(1.0, 1.0, 1.0),
-                        refraction_index: 1.5,
-                    },
-                    _ => Material::Dielectric {
-                        albedo: random_albedo,
-                        refraction_index: random_refractive_index,
-                    },
-                };
-                world.add(Sphere::new(center, random_radius, sphere_material));
-            }
+    let sphere_material = match mat_picker {
+        0 => {
+            let albedo = random_albedo;
+            Material::Lambertian { albedo }
         }
-    }
-
-    world
-}
-
-fn test_scene() -> Scene {
-    let mut world: Scene = Scene::new();
-
-    let material_ground = Material::Lambertian {
-        albedo: Color::new(0.8, 0.8, 0.0),
+        1 => {
+            let albedo = random_albedo;
+            let fuzz = Uniform::new(0.0, 0.5).sample(&mut rand::thread_rng());
+            Material::Metal { albedo, fuzz }
+        }
+        2 => Material::Dielectric {
+            albedo: Color::new(1.0, 1.0, 1.0),
+            refraction_index: 1.5,
+        },
+        _ => Material::Dielectric {
+            albedo: random_albedo,
+            refraction_index: random_refractive_index,
+        },
     };
-    let material_center = Material::Lambertian {
-        albedo: Color::new(0.0, 0.8, 0.8),
-    };
-    let material_left = Material::Metal {
-        albedo: Color::new(0.8, 0.0, 0.8),
-        fuzz: 1.0,
-    };
-    let material_right = Material::Dielectric {
-        albedo: Color::new(1.0, 1.0, 1.0),
-        refraction_index: 0.4,
-    };
-
-    world.add(Sphere::new(
-        Point3::new(0.0, -100.5, -1.0),
-        100.0,
-        material_ground,
-    ));
-    world.add(Sphere::new(
-        Point3::new(0.0, 0.0, -1.0),
-        0.5,
-        material_center,
-    ));
-    // world.add(Plane::new(
-    //     Point3::new(0.0, 0.0, -1.0),
-    //     Vec3::new(0.0, 1.0, -1.0),
-    //     material_center,
-    // ));
-    world.add(Triangle::new(
-        Point3::new(0.0, 0.0, -1.0),
-        Point3::new(1.0, 0.0, -1.0),
-        Point3::new(0.0, -1.0, -1.0),
-        material_left,
-    ));
-    world.add(Sphere::new(
-        Point3::new(-1.0, 0.0, -1.0),
-        0.5,
-        material_left,
-    ));
-    world.add(Sphere::new(
-        Point3::new(1.0, 0.0, -1.0),
-        0.5,
-        material_right,
-    ));
-
-    world
+    Sphere::new(center, random_radius, sphere_material)
 }
