@@ -32,3 +32,12 @@ The ray tracer implements the functionality in the project specification along w
 [x] Multi-Jittered Sampling
 [x] Simple Diffuse Shading
 [x] Hard Shadows
+
+[x] Import a Mesh
+[x] Per-vertex normals
+[x] Smooth shading
+[x] Construct BVH
+[x] BVH speedup
+[x] 10000 Spheres
+[x] 100000 Spheres
+[ ] Technical Report

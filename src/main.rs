@@ -109,8 +109,8 @@ fn ray_color_phong(ray: Ray, world: &Scene, depth: i32) -> Color {
 fn main() {
     // TODO: convert to clap args
     //  Image parameters
-    const aspect_ratio: f32 = 16.0 / 9.0;
-    const image_width: u32 = 200;
+    const aspect_ratio: f32 = 1.0; // 16.0 / 9.0;
+    const image_width: u32 = 400;
     const image_height: u32 = (image_width as f32 / aspect_ratio) as u32;
     const samples_per_pixel: i32 = 10;
     const max_depth: i32 = 50;
@@ -150,34 +150,24 @@ fn main() {
 
     // let world = random_scene(num_spheres);
 
-    // for nx in -50..50 {
-    //     for ny in -50..50 {
-    //         world.add(random_sphere(nx as f32 / 50.0, ny as f32 / 50.0, -10.0))
-    //     }
-    // }
+    // Grid of spheres
+    for nx in -50..50 {
+        for ny in -50..50 {
+            for nz in -5..5 {
+                world.add(random_sphere(
+                    nx as f32 / 10.0,
+                    ny as f32 / 10.0,
+                    -10.0 + (nz as f32 / 10.0),
+                ))
+            }
+        }
+    }
 
-    // for nx in -50..50 {
-    //     for ny in -50..50 {
-    //         for nz in -5..5 {
-    //             world.add(random_sphere(
-    //                 nx as f32 / 10.0,
-    //                 ny as f32 / 10.0,
-    //                 -10.0 + (nz as f32 / 10.0),
-    //             ))
-    //         }
-    //     }
-    // }
+    // Teapot mesh
+    // let mut mesh = TriangleMesh::from_file("objs/teapot.obj", random_material());
+    // mesh.shift_scale(Point3::new(0.0, -2.0, -10.0), 0.5);
+    // world.add(mesh);
 
-    // for nx in -50..50 {
-    //     for ny in -50..50 {
-    //         world.add(random_sphere(nx as f32 / 10.0, ny as f32 / 10.0, -10.0))
-    //     }
-    // }
-    let mesh = TriangleMesh::from_obj("objs/cow.obj", random_material());
-    // Teapot
-    mesh.insert_in(&mut world, Point3::new(0.0, -2.0, -10.0), 0.5);
-    // Cow
-    // mesh.add_to_world(&mut world, Point3::new(0.0, -0.0, -7.0));
     // Construct BVH and replace bounded objects
     world.accelerate(0.0, 0.0);
 
@@ -244,7 +234,7 @@ fn random_sphere(x: f32, y: f32, z: f32) -> Sphere {
             refraction_index: random_refractive_index,
         },
     };
-    Sphere::new(center, random_radius, sphere_material)
+    Sphere::new(center, 0.05, sphere_material)
 }
 
 fn random_material() -> Material {
