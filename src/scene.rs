@@ -9,7 +9,7 @@ use crate::vec3::*;
 #[derive(Clone)]
 pub struct Scene {
     pub lights: Vec<PointLight>,
-    objects: Vec<Box<dyn Hittable + Send + Sync>>,
+    objects: Vec<Box<dyn Hittable>>,
     background: (Color, Color),
 }
 
@@ -18,7 +18,6 @@ impl Scene {
         Scene {
             lights: Vec::new(),
             objects: Vec::new(),
-            bvh: None,
             background: (Color::new(1.0, 1.0, 1.0), Color::new(0.5, 0.7, 1.0)),
         }
     }
@@ -27,7 +26,7 @@ impl Scene {
         self.objects = Vec::new();
     }
 
-    pub fn add<T: Hittable + Send + Sync + 'static>(&mut self, object: T) {
+    pub fn add<T: Hittable + 'static>(&mut self, object: T) {
         self.objects.push(Box::new(object));
     }
 
@@ -36,8 +35,8 @@ impl Scene {
     }
 
     pub fn accelerate(&mut self, t0: f32, t1: f32) {
-        let mut nodes: Vec<Box<dyn Hittable + Send + Sync>> = Vec::new();
-        let mut extra: Vec<Box<dyn Hittable + Send + Sync>> = Vec::new();
+        let mut nodes: Vec<Box<dyn Hittable>> = Vec::new();
+        let mut extra: Vec<Box<dyn Hittable>> = Vec::new();
         for prim in self.objects.clone() {
             match prim.bounding_box(0.0, std::f32::MAX) {
                 Some(_) => nodes.push(prim),
@@ -46,9 +45,9 @@ impl Scene {
         }
         println!("Found {} non-boundable objects", extra.len());
         println!("Adding {} hittables to BVH", nodes.len());
-        let bvh = BVH::new(nodes, t0, t1);
+        let bvh = BVH::build(nodes, t0, t1);
         self.objects = Vec::new();
-        self.objects.push(Box::new(bvh));
+        self.objects.push(bvh);
         self.objects.append(&mut extra);
     }
 }

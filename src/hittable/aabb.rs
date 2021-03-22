@@ -2,7 +2,6 @@ use crate::hittable::bvh;
 use crate::ray::Ray;
 use crate::vec3::*;
 
-use min_max::*;
 use std::cmp::{max, min};
 
 #[derive(Copy, Clone)]
@@ -32,20 +31,31 @@ impl AABB {
         AABB::new(small, big)
     }
 
-    pub fn hit(&self, r: Ray, t_min: f32, t_max: f32) -> bool {
+    pub fn around(&self, box1: &Self) -> Self {
+        let small = Vec3::new(
+            self.min.x.min(box1.min.x),
+            self.min.y.min(box1.min.y),
+            self.min.z.min(box1.min.z),
+        );
+        let big = Vec3::new(
+            self.max.x.max(box1.max.x),
+            self.max.y.max(box1.max.y),
+            self.max.z.max(box1.max.z),
+        );
+        Self {
+            min: small,
+            max: big,
+        }
+    }
+
+    pub fn hit(&self, r: Ray, mut t_min: f32, mut t_max: f32) -> bool {
         for a in 0..3 {
             let inv_d = 1.0 / r.direction[a];
-            let mut t0 = (self.min[a] - r.origin[a]) * inv_d;
-            let mut t1 = (self.max[a] - r.origin[a]) * inv_d;
-            if inv_d < 0.0 {
-                std::mem::swap(&mut t0, &mut t1);
-            }
-            let t_min = if t0 > t_min { t0 } else { t_min };
-            let t_max = if t1 < t_max { t1 } else { t_max };
-            if t_max <= t_min {
-                return false;
-            }
+            let t0 = (self.min[a] - r.origin[a]) * inv_d;
+            let t1 = (self.max[a] - r.origin[a]) * inv_d;
+            t_min = t_min.max(t0.min(t1));
+            t_max = t_max.min(t0.max(t1));
         }
-        true
+        t_max > t_min
     }
 }
