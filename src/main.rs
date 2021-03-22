@@ -153,7 +153,7 @@ fn main() {
     // Grid of spheres
     for nx in -50..50 {
         for ny in -50..50 {
-            for nz in -5..5 {
+            for nz in -50..50 {
                 world.add(random_sphere(
                     nx as f32 / 10.0,
                     ny as f32 / 10.0,

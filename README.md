@@ -21,6 +21,25 @@ The ray tracer implements the functionality in the project specification along w
 - Multi-core parallelism for faster rendering
 - Translucent multi-colored balls (i.e. refract light but are also colored)
 
+## BVH Performance Analysis
+
+An optional feature that can improve rendering time is the bouding volume hierarchy (BVH). This uses a tree-like data structure with bounding boxes to decrease the number of calld to the `hit` function. You can opt to use a BVH by simpy adding a call to the `accelerate` function no your `Scence`. Note that this may incur a performance penalty if your scene contains only asmall number of objects.
+
+Here is quick comparison of the rendering times with and without the BVH.
+
+| Number of Spheres | Render Time (BVH) | Render Time (no BVH) | Speed-Up Factor |
+| ----------------- | ----------------- | -------------------- | --------------- |
+| 1,000             | 7.71 s            | 16.34 s              | 2.12            |
+| 10,000            | 9.97 s            | 105.06 s             | 10.5            |
+| 100,000           | 19.66 s           | N/A (est. 26 m)      | ~79.3           |
+| 1,000,000         | 51.82 s           | N/A (est. 05 h)      | ~347            |
+
+All experiements were run on a MacBook Air (13-inch, 2017) with the following hardware:
+
+- **Processor:** 1.8 GHz Dual-Core Intel Core i5
+- **Memory:** 8 GB 1600 MHz DDR3
+- **Graphics:** Intel HD Graphics 6000 1536 MB
+
 ## TODO
 
 [x] Commented code
@@ -40,4 +59,4 @@ The ray tracer implements the functionality in the project specification along w
 [x] BVH speedup
 [x] 10000 Spheres
 [x] 100000 Spheres
-[ ] Technical Report
+[x] Technical Report
