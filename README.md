@@ -1,6 +1,6 @@
 # Traci
 
-![A Sample Rendered Image](images/final.png)
+![A Sample Rendered Image](images/RTiOW/final.png)
 
 ## Build from Source
 
