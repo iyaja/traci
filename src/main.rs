@@ -109,8 +109,8 @@ fn ray_color_phong(ray: Ray, world: &Scene, depth: i32) -> Color {
 fn main() {
     // TODO: convert to clap args
     //  Image parameters
-    const aspect_ratio: f32 = 1.0; // 16.0 / 9.0;
-    const image_width: u32 = 400;
+    const aspect_ratio: f32 = 16.0 / 9.0; // 16.0 / 9.0;
+    const image_width: u32 = 480;
     const image_height: u32 = (image_width as f32 / aspect_ratio) as u32;
     const samples_per_pixel: i32 = 10;
     const max_depth: i32 = 50;
