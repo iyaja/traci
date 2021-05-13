@@ -55,7 +55,7 @@ impl Ray {
         Ray::new(hit.point, r_out_perp + r_out_parallel)
     }
 
-    fn reflactance(&self, cosine: f32, refraction_index: f32) -> f32 {
+    fn reflectance(&self, cosine: f32, refraction_index: f32) -> f32 {
         let mut r0 = (1.0 - refraction_index) / (1.0 + refraction_index);
         r0 = r0 * r0;
         r0 + ((1.0 - r0) * (1.0 - cosine).powi(5))
