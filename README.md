@@ -4,15 +4,21 @@
 
 ## Build from Source
 
-Traci is written in Rust. To compile to an executable, you first need a working installation of the Rust and Cargo. Please visit [the official Rust website](https://www.rust-lang.org/) for instructions. Then, to compile (with dependencies for math libraries, etc.), run the following command from the root of the project directory:
+Traci is written in Rust. To compile to an executable, you first need a working installation of the Rust and Cargo. Please visit [the official Rust website](https://www.rust-lang.org/) for instructions. Additionally, Traci uses ESRGAN (Super Resolution model) to upscale the images once the ray tracing is done. For this, you will additionally need Python 3 and PyTorch installed and working.
+
+To compile (with dependencies for math libraries, etc.) and execute the program, run the following command from the root of the project directory:
 
 ```
-cargo run --release
+./run.sh
 ```
+
+The script first runs the Rust code to produce a ray traced image, and then runs the Python script to upscale the output image.
 
 > Note: it it important to use the `--release` flag to ensure that the project gets compiled with optimizations. This makes a very bug difference in runtime of the ray tracer.
 
 This will fetch all dependencies, compile, and run the resulting binary (which is saved to `target/release/traci`). The output image is saved to `images/out.png`. The sample image shown on this README was rendered at full HD resolution with 1000 samples per pixel on an 8 core CPU. Rendering took just under 10 minutes.
+
+If you're using Super Resolution as well, the output image is saved to `images/out_sr.png`
 
 ## Performance and Creative Features
 

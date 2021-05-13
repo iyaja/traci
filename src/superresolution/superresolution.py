@@ -35,4 +35,4 @@ output = np.transpose(output[[2, 1, 0], :, :], (1, 2, 0))
 output = (output * 255.0).round()
 
 # Write the new image to the same folder
-cv2.imwrite(img_folder + 'out_sp.png', output)
+cv2.imwrite(img_folder + 'out_sr.png', output)
