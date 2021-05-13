@@ -4,9 +4,12 @@ import torch
 import RRDBNet_arch as arch
 
 # Paths
-model_path = 'RRDB_ESRGAN_x4.pth'
+# All the paths are from root project directory so that the code runs
+# with the run.sh script in the root directory
+# If you wish to run this by itself, change the paths accordingly
+model_path = 'src/superresolution/RRDB_ESRGAN_x4.pth'
 device = torch.device("cuda:0" if torch.cuda.is_available() else "cpu")
-img_folder = '../../images/'
+img_folder = 'images/'
 
 # Load the model
 model = arch.RRDBNet(3, 3, 64, 23, gc=32)
