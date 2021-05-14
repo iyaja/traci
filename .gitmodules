@@ -1,0 +1,3 @@
+[submodule "src/cuda"]
+	path = src/cuda
+	url = git@github.com:KevinPal/RayTracer.git
