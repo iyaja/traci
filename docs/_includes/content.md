@@ -122,16 +122,9 @@ entire scene.
 
 <div style="width:100%;height:0px;position:relative;padding-bottom:100.000%;"><iframe src="https://streamable.com/e/tcc48a" frameborder="0" width="100%" height="100%" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe></div>
 
-<<<<<<< HEAD
 | Resolution | Rays per Pixel | Framerate |
-| ----------- | -------------- | -------------- |
-| 500 x 500 | 2 | 29 FPS |
-=======
-| Resolution | Rays per Pixel | Rendering Time |
-| ---------- | -------------- | -------------- |
-| 500 x 500 | 2 | 29 FPS |
-
-> > > > > > > 8d2dc40 (docs: materials)
+| ---------- | -------------- | --------- |
+| 500 x 500  | 2              | 29 FPS    |
 
 ## AI Denoising + Supersampling
 
