@@ -6,7 +6,7 @@
 - Sukrit Ganesh (`sukritg2`)
 
 # Abstract
-Traci is a ray tracer written in Rust that supports . In the final project, we added
+Traci is a ray tracer written in Rust that supports features derived from Peter Shirley's Ray Tracing series. In the final project, we added
 CUDA support for increased performance; the parallelized features include: shadows, reflection, and Bounding-Volumes Hierarchy (BVH).
  We also added & fine tuned super-resolution upsampling.
 
@@ -46,7 +46,7 @@ parallelization, and was written in C.
 # Added Features 
 
 ## CUDA Parallelization
-In order to speed up the renderer and allow for high-framerate animations, our group took advantage of the CUDA parallelization API. Several features were ported over to the CUDA ray-tracer fork: shadows, bounding-volume hierarchies (BVH), texturing, and transforms.
+In order to speed up the renderer and allow for high-framerate animations, our group took advantage of the CUDA parallelization API. Several features were ported over to the CUDA ray-tracer fork: shadows, bounding volume hierarchies (BVH), texturing, and transforms.
 
 Shown below is a basic animation highlighting the performance benefits of rewriting the renderer in CUDA. In a basic scene, the parelellization enabled our renderer to output a frame in only 8 ms, allowing for fluid, high-resolution animations. To move the sphere, a transform system was written in to allow for easy re-positioning and rotation of the scene objects. Observing the specular highlight on the sphere, the real-time lighting effects are still preserved in the scene when animated in parallel.
 
@@ -57,6 +57,29 @@ All of the CUDA renders were performed with a block size of 32x32 threads.
 | Resolution  | Rays per Pixel | Framerate |
 | ----------- | -------------- | --------- |
 | 1000 x 1000 | 1              | 115 FPS   |
+
+## CUDA BVH
+
+Tracing a bounding volume hierarchy (BVH) in CUDA is similar to traversing one on a CPU.
+There are two main parts: copying the relevant data to the GPU, and traversing the tree.
+At the moment, to copy the tree, we perform a simple deep copy of the BVH, where we
+allocate a new node on the GPU for every node on the CPU, and also allocate a triangle
+buffer for every leaf node. One feature I would like to add would be to organize the 
+layout of the BVH in gpu memory. At the moment, the BVH is scattered throughout
+GPU memory, leading to high data divergence. Organizing memory to remove pointers,
+and pack data together to coalesce memory accesses would greatly improve performance.
+
+Traversing the tree is done similar to a traversal on the CPU. One difference is
+CUDA does not support recursion (newer versions may, but could have worse performance).
+Instead, we create a local stack on the stack, and convert the recursive traversal
+into an iterative one. This also helps reduce warp divergence, related to the number
+of threads running difference instructions.
+
+<img src="{{site.baseurl}}/assets/img/bvh.png">
+
+| Resolution  | Rays per Pixel | Rendering Time |
+| ----------- | -------------- | -------------- |
+| 1000 x 1000 | 1              | 1.8 sec        |
 
 ## CUDA Shadows
 Shadows typically add a fair bit of time to a render, so we also made shadow computation parallel with CUDA. The image is identitical to one rendered serially, but the render of the dragon mesh—with 871,414 triangles—took only a second to render. That represents a speedup of more than eight times from the serial renderer, which took 8.615 seconds to render the same scene.
@@ -78,6 +101,18 @@ The below animation features the speedup from BVH & CUDA, parallelized shadows, 
 | 500 x 500   | 2              | 3 FPS          |
 
 ## CUDA Texturing
+
+CUDA has hardware support for many texture operations. A texture is read in from
+a .ppm file, and copied to GPU memory, then bound to a CUDA texture. The OBJ
+file parser from MP2 was also upgraded to parse surface normals and texture coordinates
+from the .obj file, which was then passed in to the GPU along with the other vertex
+attributes, which then got interpolated like normal. These were then used
+to look up texture values from texture memory. Nearest neighbor filtering was used
+for simplicity, but CUDA does support other filtering methods, which we would like
+to use in the future. Another thing we would like to support in the future is the use
+of multiple textures, since at the moment only a single texture gets bound for the
+entire scene.
+
 
 <div style="width:100%;height:0px;position:relative;padding-bottom:100.000%;"><iframe src="https://streamable.com/e/tcc48a" frameborder="0" width="100%" height="100%" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe></div>
 
