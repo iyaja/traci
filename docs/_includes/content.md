@@ -147,6 +147,12 @@ In addition to the exiting material BRDFs we used in class, we implemented the f
 - Lambertian Diffuse
 - Hemisphere Diffuse
 
+The scene below illustres the brushed metal and translucent BRDFs.
+
+<img src="{{site.baseurl}}/assets/img/brdf.png">
+
+From left to right, the BRDFs used are: low-fuxx metal, tranlucent, and high-fuzz metal.
+
 ### Diffuse Surfaces
 
 For earlier assignments, we implemneted diffuse surfaces through a single term in the Phong reflection model.

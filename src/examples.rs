@@ -2,7 +2,7 @@ use crate::vec3::*;
 
 use rand;
 
-fn random_scene(num_spheres: u32) -> Scene {
+pub fn random_scene(num_spheres: u32) -> Scene {
     let mut world = Scene::new();
 
     let ground_material = Material::Lambertian {
@@ -66,7 +66,7 @@ fn random_scene(num_spheres: u32) -> Scene {
     world
 }
 
-fn test_scene() -> Scene {
+pub fn test_scene() -> Scene {
     let mut world: Scene = Scene::new();
 
     let material_ground = Material::Lambertian {
@@ -120,7 +120,7 @@ fn test_scene() -> Scene {
     world
 }
 
-fn simple_scene() -> Scene {
+pub fn simple_scene() -> Scene {
     let mut world: Scene = Scene::new();
     world.add(Triangle::new(
         Point3::new(4.0, -1.0, -8.0),

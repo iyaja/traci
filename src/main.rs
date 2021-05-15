@@ -21,7 +21,6 @@ mod scene;
 mod vec3;
 
 use camera::{Camera, OrthographicCamera, PerspectiveCamera};
-use examples::*;
 use hittable::mesh::TriangleMesh;
 use hittable::plane::Plane;
 use hittable::sphere::Sphere;
@@ -117,7 +116,7 @@ fn main() {
     const max_depth: i32 = 50;
 
     // Camera parameters
-    let lookfrom = Point3::new(0.0, 0.0, 0.0);
+    let lookfrom = Point3::new(0.0, 0.0, -10.0);
     let lookat = Point3::new(0.0, 0.0, -1.0);
     // Alternate viewpoint
     // let lookfrom = Point3::new(5.5, 0.5, -1.0);
@@ -138,7 +137,7 @@ fn main() {
         focal_length,
     );
     let mut img = ImageBuffer::new(image_width, image_height);
-    let mut world: Scene = examples::test_scene();
+    let mut world: Scene = test_scene();
 
     // Scene parameters
     // let num_spheres = 30;
@@ -262,4 +261,58 @@ fn random_material() -> Material {
             albedo: random_albedo,
         },
     }
+}
+
+fn test_scene() -> Scene {
+    let mut world: Scene = Scene::new();
+
+    let material_ground = Material::Lambertian {
+        albedo: Color::new(0.8, 0.8, 0.0),
+    };
+    let material_right = Material::Metal {
+        albedo: Color::new(0.0, 0.8, 0.8),
+        fuzz: 0.2,
+    };
+    let material_left = Material::Metal {
+        albedo: Color::new(0.8, 0.0, 0.8),
+        fuzz: 1.0,
+    };
+    let material_center = Material::Dielectric {
+        albedo: Color::new(0.3, 0.3, 0.7),
+        refraction_index: 0.4,
+    };
+
+    world.add(Sphere::new(
+        Point3::new(0.0, -100.5, -1.0),
+        100.0,
+        material_ground,
+    ));
+    world.add(Sphere::new(
+        Point3::new(0.0, 0.0, -1.0),
+        0.5,
+        material_center,
+    ));
+    // world.add(Plane::new(
+    //     Point3::new(0.0, 0.0, -1.0),
+    //     Vec3::new(0.0, 1.0, -1.0),
+    //     material_center,
+    // ));
+    // world.add(Triangle::new(
+    //     Point3::new(0.0, 0.0, -1.0),
+    //     Point3::new(1.0, 0.0, -1.0),
+    //     Point3::new(0.0, -1.0, -1.0),
+    //     material_left,
+    // ));
+    world.add(Sphere::new(
+        Point3::new(-1.0, 0.0, -1.0),
+        0.5,
+        material_left,
+    ));
+    world.add(Sphere::new(
+        Point3::new(1.0, 0.0, -1.0),
+        0.5,
+        material_right,
+    ));
+
+    world
 }
