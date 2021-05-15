@@ -10,7 +10,7 @@
 
 Traci is a ray tracer written in Rust that supports a number of artistic and performance features. In the final project, we added a number of features including CUDA support for increased performance and real-time ray tracing, AI super-resolution for upscaling images, and a new material implementation - brished metal.
 
-Our CUDA renderer implements a number of features: shadows, textures, animations, reflection, refraction, and Bounding-Volume Hierarchy (BVH) acceleration.
+Our CUDA renderer implements a number of features: shadows, textures, animations, reflections, and Bounding-Volume Hierarchy (BVH) acceleration.
 
 ## CUDA Resources
 
