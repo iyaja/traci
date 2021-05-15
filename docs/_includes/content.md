@@ -126,6 +126,20 @@ entire scene.
 | ---------- | -------------- | --------- |
 | 500 x 500  | 2              | 29 FPS    |
 
+## CUDA Reflections
+
+Most artistic effects can be implemented identically to how they would be implemented for a CPU. However, one difficulty implementing lighting path effects like reflection and refraction is that recursion does not work well on the GPU due to memory limitations and the nature of optimizations that the CUDA compilers applies. Typically, this is resolved by converting.
+
+For our project, we adopted a simple approach that uses a single iteration. This keeps the rendering simple and fast, while also providing an visually acceptable implementation of reflections. However, this comes at the cost of loosing the visual fidelity of a multi-bouce recursive path tracer with indirect lighting and reflections.
+
+The animation below was rendered in real time and demonstrates reflection with textures:
+
+<div style="width:100%;height:0px;position:relative;padding-bottom:100.000%;"><iframe src="https://streamable.com/apr7cq" frameborder="0" width="100%" height="100%" allowfullscreen style="width:100%;height:100%;position:absolute;left:0px;top:0px;overflow:hidden;"></iframe></div>
+
+| Resolution | Rays per Pixel | Framerate |
+| ---------- | -------------- | --------- |
+| 500 x 500  | 3              | 19 FPS    |
+
 ## AI Denoising + Supersampling
 
 Although processing capability has increased exponentially over the last few decades, most graphics engines relying purely on ray tracing and other brute force techniques cannot realistically render a detailed scene at an adequate framerate. Furthermore, bugs in the rendering engine may result in artifacts appearing in the scene. Thankfully, artificial intelligence has enabled enginners to overcome performance limitations and increase the clarity of an image without pushing the rendering engine further. AI supersampling makes use of a neural network to remove noise and artifacts and increase the resolution of the image. We used a [pretrained Pytorch model](https://github.com/xinntao/BasicSR) from BasicSR, an open-source toolkit. We then wrote a bash script to feed the images from the ray tracer into this model; in the future, we would like to integrate the model with the Rust code. The model worked well on a pixelated image; the resulting supersampled image was similar to the target image and significantly better than the bilinearly upscaled image. The supersampling process took significantly less time than rendering a higher resolution image.
