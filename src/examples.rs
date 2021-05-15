@@ -72,15 +72,16 @@ fn test_scene() -> Scene {
     let material_ground = Material::Lambertian {
         albedo: Color::new(0.8, 0.8, 0.0),
     };
-    let material_center = Material::Lambertian {
+    let material_right = Material::Metal {
         albedo: Color::new(0.0, 0.8, 0.8),
+        fuzz: 0.3,
     };
     let material_left = Material::Metal {
         albedo: Color::new(0.8, 0.0, 0.8),
         fuzz: 1.0,
     };
-    let material_right = Material::Dielectric {
-        albedo: Color::new(1.0, 1.0, 1.0),
+    let material_center = Material::Dielectric {
+        albedo: Color::new(0.1, 0.3, 1.0),
         refraction_index: 0.4,
     };
 
@@ -99,12 +100,12 @@ fn test_scene() -> Scene {
     //     Vec3::new(0.0, 1.0, -1.0),
     //     material_center,
     // ));
-    world.add(Triangle::new(
-        Point3::new(0.0, 0.0, -1.0),
-        Point3::new(1.0, 0.0, -1.0),
-        Point3::new(0.0, -1.0, -1.0),
-        material_left,
-    ));
+    // world.add(Triangle::new(
+    //     Point3::new(0.0, 0.0, -1.0),
+    //     Point3::new(1.0, 0.0, -1.0),
+    //     Point3::new(0.0, -1.0, -1.0),
+    //     material_left,
+    // ));
     world.add(Sphere::new(
         Point3::new(-1.0, 0.0, -1.0),
         0.5,

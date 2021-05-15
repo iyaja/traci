@@ -21,6 +21,7 @@ mod scene;
 mod vec3;
 
 use camera::{Camera, OrthographicCamera, PerspectiveCamera};
+use examples::*;
 use hittable::mesh::TriangleMesh;
 use hittable::plane::Plane;
 use hittable::sphere::Sphere;
@@ -112,7 +113,7 @@ fn main() {
     const aspect_ratio: f32 = 1.0; // 16.0 / 9.0;
     const image_width: u32 = 400;
     const image_height: u32 = (image_width as f32 / aspect_ratio) as u32;
-    const samples_per_pixel: i32 = 10;
+    const samples_per_pixel: i32 = 100;
     const max_depth: i32 = 50;
 
     // Camera parameters
@@ -137,7 +138,7 @@ fn main() {
         focal_length,
     );
     let mut img = ImageBuffer::new(image_width, image_height);
-    let mut world: Scene = Scene::new();
+    let mut world: Scene = examples::test_scene();
 
     // Scene parameters
     // let num_spheres = 30;
@@ -151,17 +152,17 @@ fn main() {
     // let world = random_scene(num_spheres);
 
     // Grid of spheres
-    for nx in -50..50 {
-        for ny in -50..50 {
-            for nz in -50..50 {
-                world.add(random_sphere(
-                    nx as f32 / 10.0,
-                    ny as f32 / 10.0,
-                    -10.0 + (nz as f32 / 10.0),
-                ))
-            }
-        }
-    }
+    // for nx in -50..50 {
+    //     for ny in -50..50 {
+    //         for nz in -50..50 {
+    //             world.add(random_sphere(
+    //                 nx as f32 / 10.0,
+    //                 ny as f32 / 10.0,
+    //                 -10.0 + (nz as f32 / 10.0),
+    //             ))
+    //         }
+    //     }
+    // }
 
     // Teapot mesh
     // let mut mesh = TriangleMesh::from_file("objs/teapot.obj", random_material());
@@ -169,7 +170,7 @@ fn main() {
     // world.add(mesh);
 
     // Construct BVH and replace bounded objects
-    world.accelerate(0.0, 0.0);
+    // world.accelerate(0.0, 0.0);
 
     world.add_light(PointLight::new(
         Point3::new(-10.0, -10.0, -10.0),
@@ -192,7 +193,7 @@ fn main() {
                 let u = (x as f32 + rng.gen::<f32>()) / (image_width as f32 - 1.0);
                 let v = (y as f32 + rng.gen::<f32>()) / (image_height as f32 - 1.0);
                 let r = cam.get_ray(u, v);
-                ray_color_phong(r, &world, max_depth)
+                ray_color(r, &world, max_depth)
             })
             .sum();
 
