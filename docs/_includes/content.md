@@ -151,7 +151,7 @@ The scene below illustres the brushed metal and translucent BRDFs.
 
 <img src="{{site.baseurl}}/assets/img/brdf.png">
 
-From left to right, the BRDFs used are: low-fuxx metal, tranlucent, and high-fuzz metal.
+From left to right, the BRDFs used are: low-fuzz metal, tranlucent, and high-fuzz metal.
 
 ### Diffuse Surfaces
 
