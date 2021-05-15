@@ -143,6 +143,33 @@ In addition to the exiting material BRDFs we used in class, we implemented the f
 
 - Brushed Metal
 - Translucent Dielectrics
+- "Lazy Hack" Diffuse
+- Lambertian Diffuse
+- Hemisphere Diffuse
+
+### Diffuse Surfaces
+
+For earlier assignments, we implemneted diffuse surfaces through a single term in the Phong reflection model.
+
+Here, we also implemented the three more accurate physical approximations of diffuse surfaces, as described in [chapter 8](https://raytracing.github.io/books/RayTracingInOneWeekend.html#diffusematerials). Those are:
+
+- Sampling the scattered ray from a unit sphere with random length.
+- Sampling the scattered ray from a unit hemisphere.
+- Sampling the scattered ray from the surface of a unit sphere with high probability of picking a value near the normal (Lambertian).
+
+As Sirley points out in the book, these different sampling methods evolved over time primarily due to the difficulty of proving which one was corrent. Today, the Lambertian model is accepted as the most physically accurate. The differences between these three models are subtle but noticeable when viewed side-by-side:
+
+<div class="row">
+  <div class="column">
+    <img src="{{site.baseurl}}/assets/img/diffuse.png">
+  </div>
+  <div class="column">
+    <img src="{{site.baseurl}}/assets/img/diffuse_hemisphere.png">
+  </div>
+  <div class="column">
+    <img src="{{site.baseurl}}/assets/img/lambertian.png">
+  </div>
+</div>
 
 As a sidenote, our earlier decision to implement materials as structured `enum` variants paid off, as adding a new BRDF was simply a matter of introducing a new variant in the `Material` definition and implementing a `scatter
 
