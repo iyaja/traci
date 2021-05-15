@@ -160,15 +160,9 @@ Here, we also implemented the three more accurate physical approximations of dif
 As Sirley points out in the book, these different sampling methods evolved over time primarily due to the difficulty of proving which one was corrent. Today, the Lambertian model is accepted as the most physically accurate. The differences between these three models are subtle but noticeable when viewed side-by-side:
 
 <div class="row">
-  <div class="column">
     <img src="{{site.baseurl}}/assets/img/diffuse.png">
-  </div>
-  <div class="column">
     <img src="{{site.baseurl}}/assets/img/diffuse_hemisphere.png">
-  </div>
-  <div class="column">
     <img src="{{site.baseurl}}/assets/img/lambertian.png">
-  </div>
 </div>
 
 As a sidenote, our earlier decision to implement materials as structured `enum` variants paid off, as adding a new BRDF was simply a matter of introducing a new variant in the `Material` definition and implementing a `scatter
