@@ -165,7 +165,7 @@ As Shirley points out in the book, these different sampling methods evolved over
     <img src="{{site.baseurl}}/assets/img/lambertian.png">
 </div>
 
-As a sidenote, our earlier decision to implement materials as structured `enum` variants paid off, as adding a new BRDF was simply a matter of introducing a new variant in the `Material` definition and implementing a `scatter
+As a sidenote, our earlier decision to implement materials as structured `enum` variants paid off, as adding a new BRDF was simply a matter of introducing a new variant in the `Material` definition and implementing a correspoding `scatter` function.
 
 # Conclusion
 
