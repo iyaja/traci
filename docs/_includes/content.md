@@ -157,7 +157,7 @@ Here, we also implemented the three more accurate physical approximations of dif
 - Sampling the scattered ray from a unit hemisphere.
 - Sampling the scattered ray from the surface of a unit sphere with high probability of picking a value near the normal (Lambertian).
 
-As Sirley points out in the book, these different sampling methods evolved over time primarily due to the difficulty of proving which one was corrent. Today, the Lambertian model is accepted as the most physically accurate. The differences between these three models are subtle but noticeable when viewed side-by-side:
+As Shirley points out in the book, these different sampling methods evolved over time primarily due to the difficulty of proving which one was correct. Today, the Lambertian model is accepted as the most physically accurate. The differences between these three models are subtle but noticeable when viewed side-by-side:
 
 <div class="row">
     <img src="{{site.baseurl}}/assets/img/diffuse.png">
