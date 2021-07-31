@@ -42,21 +42,15 @@ All experiements were run on a MacBook Air (13-inch, 2017) with the following ha
 
 ## TODO
 
-[x] Commented code
-[x] Ray-Plane Intersection
-[x] Ray-Sphere Intersection
-[x] Ray-Triangle Intersection
-[x] Movable Camera
-[x] Orthographic and Perspective Projection
-[x] Multi-Jittered Sampling
-[x] Simple Diffuse Shading
-[x] Hard Shadows
-
-[x] Import a Mesh
-[x] Per-vertex normals
-[x] Smooth shading
-[x] Construct BVH
-[x] BVH speedup
-[x] 10000 Spheres
-[x] 100000 Spheres
-[x] Technical Report
+- [x] Ray-Plane Intersection
+- [x] Ray-Sphere Intersection
+- [x] Ray-Triangle Intersection
+- [x] Movable Camera
+- [x] Orthographic and Perspective Projection
+- [x] Multi-Jittered Sampling
+- [x] Simple Diffuse Shading
+- [x] Hard Shadows
+- [x] Mesh Import
+- [x] Per-vertex normals
+- [x] Smooth shading
+- [x] BVH Acceleration
